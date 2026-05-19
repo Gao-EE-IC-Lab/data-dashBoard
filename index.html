@@ -1,0 +1,330 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body,html{font-family:'Poppins',sans-serif;background:#f0f4f8;}
+.dash{background:#f0f4f8;padding:0 0 40px;font-family:'Poppins',sans-serif;}
+.header{text-align:center;padding:40px 24px 32px;}
+.pill-eyebrow{display:inline-block;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 14px;border-radius:999px;margin-bottom:14px;}
+.header h1{font-size:32px;font-weight:800;color:#0f172a;line-height:1.2;margin-bottom:8px;}
+.header h1 span{color:#2563eb;}
+.header p{font-size:14px;color:#64748b;margin-bottom:16px;}
+.divider{width:60px;height:4px;background:linear-gradient(90deg,#2563eb,#0891b2);border-radius:2px;margin:0 auto;}
+.upload-zone{max-width:560px;margin:0 auto 32px;background:#fff;border:2px dashed #cbd5e1;border-radius:16px;padding:48px 32px;text-align:center;cursor:pointer;transition:border-color .2s,box-shadow .2s;}
+.upload-zone:hover,.upload-zone.drag{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.08);}
+.upload-icon{width:52px;height:52px;background:#eff6ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;}
+.upload-zone h3{font-size:16px;font-weight:700;color:#1e293b;margin-bottom:6px;}
+.upload-zone p{font-size:13px;color:#64748b;margin-bottom:20px;}
+.btn-upload{background:#2563eb;color:#fff;border:none;border-radius:10px;padding:10px 24px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn-upload:hover{background:#1d4ed8;}
+#fileInput{display:none;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto 24px;padding:0 24px;}
+.live-pill{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:999px;padding:6px 16px;font-size:13px;font-weight:500;color:#374151;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+.btn-reset{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:7px 18px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .2s;}
+.btn-reset:hover{border-color:#2563eb;color:#2563eb;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:1200px;margin:0 auto 24px;padding:0 24px;}
+.kpi-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px 20px 18px;border-left:4px solid;transition:transform .2s,box-shadow .2s;}
+.kpi-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.kpi-card.blue{border-left-color:#2563eb;}
+.kpi-card.cyan{border-left-color:#0891b2;}
+.kpi-card.green{border-left-color:#059669;}
+.kpi-card.amber{border-left-color:#d97706;}
+.kpi-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.kpi-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.kpi-icon.blue{background:#eff6ff;}
+.kpi-icon.cyan{background:#ecfeff;}
+.kpi-icon.green{background:#f0fdf4;}
+.kpi-icon.amber{background:#fffbeb;}
+.kpi-label{font-size:12px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;}
+.kpi-val{font-size:30px;font-weight:800;color:#0f172a;line-height:1;}
+.kpi-sub{font-size:12px;color:#94a3b8;margin-top:4px;}
+.charts-row{display:grid;gap:16px;max-width:1200px;margin:0 auto 16px;padding:0 24px;}
+.charts-row.two{grid-template-columns:1fr 1fr;}
+.charts-row.three{grid-template-columns:1fr 1fr 1fr;}
+.chart-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;transition:transform .2s,box-shadow .2s;}
+.chart-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07);}
+.chart-title{font-size:14px;font-weight:700;color:#1e293b;margin-bottom:4px;}
+.chart-sub{font-size:12px;color:#94a3b8;margin-bottom:16px;}
+.fadeUp{opacity:0;transform:translateY(20px);animation:fadeUp .5s forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.legend-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:11px;color:#64748b;}
+.legend-item{display:flex;align-items:center;gap:5px;}
+.legend-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+#dashboard{display:none;}
+</style>
+
+<div class="dash" id="app">
+<div class="header">
+  <div class="pill-eyebrow">Analytics Suite</div>
+  <h1>Sales <span>Performance</span> Dashboard</h1>
+  <p>Upload your order data to unlock interactive insights</p>
+  <div class="divider"></div>
+</div>
+
+<div id="uploadScreen">
+  <div class="upload-zone" id="dropZone">
+    <div class="upload-icon">📊</div>
+    <h3>Drop your JSON file here</h3>
+    <p>Supports order data with Sales, Profit, Quantity, Segment, State, Product, Ship Mode fields</p>
+    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">Choose File</button>
+    <input type="file" id="fileInput" accept=".json">
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="status-bar">
+    <div class="live-pill"><div class="live-dot"></div><span id="recordCount">0 records loaded</span></div>
+    <button class="btn-reset" onclick="resetDash()">↩ Reset</button>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi-card blue fadeUp" style="animation-delay:.05s">
+      <div class="kpi-top"><div class="kpi-icon blue">💰</div><div class="kpi-label">Total Revenue</div></div>
+      <div class="kpi-val" id="kpiRevenue">—</div>
+      <div class="kpi-sub">All orders combined</div>
+    </div>
+    <div class="kpi-card cyan fadeUp" style="animation-delay:.1s">
+      <div class="kpi-top"><div class="kpi-icon cyan">📈</div><div class="kpi-label">Total Profit</div></div>
+      <div class="kpi-val" id="kpiProfit">—</div>
+      <div class="kpi-sub" id="kpiMargin">—</div>
+    </div>
+    <div class="kpi-card green fadeUp" style="animation-delay:.15s">
+      <div class="kpi-top"><div class="kpi-icon green">📦</div><div class="kpi-label">Units Sold</div></div>
+      <div class="kpi-val" id="kpiUnits">—</div>
+      <div class="kpi-sub">Total quantity</div>
+    </div>
+    <div class="kpi-card amber fadeUp" style="animation-delay:.2s">
+      <div class="kpi-top"><div class="kpi-icon amber">🧾</div><div class="kpi-label">Avg Order Value</div></div>
+      <div class="kpi-val" id="kpiAOV">—</div>
+      <div class="kpi-sub">Per transaction</div>
+    </div>
+  </div>
+
+  <div class="charts-row two">
+    <div class="chart-card fadeUp" style="animation-delay:.25s">
+      <div class="chart-title">Revenue & Profit Over Time</div>
+      <div class="chart-sub">Monthly trend</div>
+      <div style="position:relative;height:220px;"><canvas id="lineChart" role="img" aria-label="Monthly revenue and profit trend line chart"></canvas></div>
+      <div class="legend-row">
+        <div class="legend-item"><div class="legend-sq" style="background:#2563eb"></div>Revenue</div>
+        <div class="legend-item"><div class="legend-sq" style="background:#059669"></div>Profit</div>
+      </div>
+    </div>
+    <div class="chart-card fadeUp" style="animation-delay:.3s">
+      <div class="chart-title">Revenue by Segment</div>
+      <div class="chart-sub">Customer segment breakdown</div>
+      <div style="position:relative;height:220px;"><canvas id="donutSegment" role="img" aria-label="Donut chart of revenue by customer segment"></canvas></div>
+      <div class="legend-row" id="segmentLegend"></div>
+    </div>
+  </div>
+
+  <div class="charts-row two">
+    <div class="chart-card fadeUp" style="animation-delay:.35s">
+      <div class="chart-title">US Sales by State</div>
+      <div class="chart-sub">Geographic distribution</div>
+      <div id="usMap" style="width:100%;min-height:200px;"></div>
+    </div>
+    <div class="chart-card fadeUp" style="animation-delay:.4s">
+      <div class="chart-title">Top 10 Products</div>
+      <div class="chart-sub">By total revenue</div>
+      <div id="barWrap" style="position:relative;"><canvas id="barChart" role="img" aria-label="Horizontal bar chart of top 10 products by revenue"></canvas></div>
+    </div>
+  </div>
+
+  <div class="charts-row three">
+    <div class="chart-card fadeUp" style="animation-delay:.45s">
+      <div class="chart-title">Profit Share</div>
+      <div class="chart-sub">By ship mode</div>
+      <div style="position:relative;height:180px;"><canvas id="donutProfit" role="img" aria-label="Profit share by ship mode donut chart"></canvas></div>
+      <div class="legend-row" id="shipLegend1"></div>
+    </div>
+    <div class="chart-card fadeUp" style="animation-delay:.5s">
+      <div class="chart-title">Units Share</div>
+      <div class="chart-sub">By ship mode</div>
+      <div style="position:relative;height:180px;"><canvas id="donutUnits" role="img" aria-label="Units share by ship mode donut chart"></canvas></div>
+      <div class="legend-row" id="shipLegend2"></div>
+    </div>
+    <div class="chart-card fadeUp" style="animation-delay:.55s">
+      <div class="chart-title">Order Count</div>
+      <div class="chart-sub">By ship mode</div>
+      <div style="position:relative;height:180px;"><canvas id="donutOrders" role="img" aria-label="Order count by ship mode donut chart"></canvas></div>
+      <div class="legend-row" id="shipLegend3"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+const SHIP_COLORS={'Standard Class':'#2563eb','Second Class':'#7c3aed','First Class':'#0891b2','Same Day':'#d97706'};
+const SEG_COLORS=['#2563eb','#0891b2','#059669'];
+let charts={};
+
+function parseSales(s){return parseFloat(String(s).replace(/[$,]/g,''))||0;}
+
+function loadData(data){
+  document.getElementById('uploadScreen').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  document.getElementById('recordCount').textContent=data.length+' records loaded';
+
+  const rev=data.reduce((a,r)=>a+parseSales(r.Sales),0);
+  const prf=data.reduce((a,r)=>a+parseSales(r.Profit),0);
+  const units=data.reduce((a,r)=>a+(parseInt(r.Quantity)||0),0);
+  const aov=rev/data.length;
+  document.getElementById('kpiRevenue').textContent='$'+Math.round(rev).toLocaleString();
+  document.getElementById('kpiProfit').textContent='$'+Math.round(prf).toLocaleString();
+  document.getElementById('kpiMargin').textContent=((prf/rev)*100).toFixed(1)+'% margin';
+  document.getElementById('kpiUnits').textContent=units.toLocaleString();
+  document.getElementById('kpiAOV').textContent='$'+aov.toFixed(0);
+
+  buildLine(data);
+  buildSegment(data);
+  buildUSMap(data);
+  buildBar(data);
+  buildShipDonuts(data);
+}
+
+function buildLine(data){
+  const byMonth={};
+  data.forEach(r=>{
+    const parts=r['Order Date'].split('/');
+    let m,y;
+    if(parts[2]&&parts[2].length===4){m=parseInt(parts[1])-1;y=parseInt(parts[2]);}
+    else{m=parseInt(parts[0])-1;y=parseInt(parts[2]);}
+    const key=y+'-'+String(m+1).padStart(2,'0');
+    if(!byMonth[key])byMonth[key]={rev:0,prf:0};
+    byMonth[key].rev+=parseSales(r.Sales);
+    byMonth[key].prf+=parseSales(r.Profit);
+  });
+  const keys=Object.keys(byMonth).sort();
+  const labels=keys.map(k=>{const[y,m]=k.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y.slice(2);});
+  if(charts.line)charts.line.destroy();
+  charts.line=new Chart(document.getElementById('lineChart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Revenue',data:keys.map(k=>Math.round(byMonth[k].rev)),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,.1)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#2563eb',borderDash:[]},
+      {label:'Profit',data:keys.map(k=>Math.round(byMonth[k].prf)),borderColor:'#059669',backgroundColor:'rgba(5,150,105,.08)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#059669',borderDash:[4,3]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#e2e8f0'},ticks:{font:{family:'Poppins',size:10},maxRotation:45,autoSkip:true,maxTicksLimit:8}},y:{grid:{color:'#e2e8f0'},ticks:{font:{family:'Poppins',size:10},callback:v=>'$'+Math.round(v/1000)+'k'}}}}
+  });
+}
+
+function buildSegment(data){
+  const seg={};
+  data.forEach(r=>{const s=r.Segment||'Other';if(!seg[s])seg[s]=0;seg[s]+=parseSales(r.Sales);});
+  const labels=Object.keys(seg);const vals=labels.map(l=>Math.round(seg[l]));
+  const colors=labels.map((_,i)=>SEG_COLORS[i%SEG_COLORS.length]);
+  if(charts.seg)charts.seg.destroy();
+  charts.seg=new Chart(document.getElementById('donutSegment'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' $'+ctx.parsed.toLocaleString()}}}}
+  });
+  const total=vals.reduce((a,b)=>a+b,0);
+  const lg=document.getElementById('segmentLegend');
+  lg.innerHTML=labels.map((l,i)=>`<div class="legend-item"><div class="legend-sq" style="background:${colors[i]}"></div>${l} ${((vals[i]/total)*100).toFixed(0)}%</div>`).join('');
+}
+
+function buildUSMap(data){
+  const stateData={};
+  data.filter(r=>r.Country==='United States').forEach(r=>{const s=r.State;if(s){if(!stateData[s])stateData[s]=0;stateData[s]+=parseSales(r.Sales);}});
+  const container=document.getElementById('usMap');
+  container.innerHTML='';
+  const w=container.offsetWidth||560,h=Math.round(w*0.55);
+  const svg=d3.select('#usMap').append('svg').attr('viewBox',`0 0 ${w} ${h}`).attr('width','100%');
+  const proj=d3.geoAlbersUsa().scale(w*1.2).translate([w/2,h/2]);
+  const path=d3.geoPath(proj);
+  const maxVal=Math.max(...Object.values(stateData));
+  const color=d3.scaleSequential([0,maxVal||1],d3.interpolateBlues);
+  d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json').then(us=>{
+    svg.selectAll('path').data(topojson.feature(us,us.objects.states).features).join('path')
+      .attr('d',path)
+      .attr('fill',d=>color(stateData[d.properties.name]||0))
+      .attr('stroke','#fff').attr('stroke-width',.8)
+      .append('title').text(d=>`${d.properties.name}: $${Math.round(stateData[d.properties.name]||0).toLocaleString()}`);
+  }).catch(()=>{container.innerHTML='<p style="color:#94a3b8;font-size:12px;text-align:center;padding:20px">Map unavailable</p>';});
+}
+
+function buildBar(data){
+  const prod={};
+  data.forEach(r=>{const p=r['Product Name'];if(p){if(!prod[p])prod[p]=0;prod[p]+=parseSales(r.Sales);}});
+  const sorted=Object.entries(prod).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const labels=sorted.map(e=>e[0]);const vals=sorted.map(e=>Math.round(e[1]));
+  const h=Math.max(labels.length*38+80,320);
+  document.getElementById('barWrap').style.height=h+'px';
+  if(charts.bar)charts.bar.destroy();
+  const bgColors=labels.map((_,i)=>{const t=i/(labels.length-1||1);return `rgba(${Math.round(37+t*(8-37))},${Math.round(99+t*(145-99))},${Math.round(235+t*(178-235))},1)`;});
+  charts.bar=new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels,datasets:[{label:'Revenue',data:vals,backgroundColor:bgColors,borderRadius:6,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' $'+ctx.parsed.x.toLocaleString()}}},scales:{x:{grid:{color:'#e2e8f0'},ticks:{font:{family:'Poppins',size:10},callback:v=>'$'+Math.round(v/1000)+'k'}},y:{grid:{display:false},ticks:{font:{family:'Poppins',size:10}}}}}
+  });
+}
+
+function buildShipDonuts(data){
+  const ships={};
+  data.forEach(r=>{
+    const m=r['Ship Mode']||'Other';
+    if(!ships[m])ships[m]={prf:0,units:0,orders:0};
+    ships[m].prf+=parseSales(r.Profit);
+    ships[m].units+=(parseInt(r.Quantity)||0);
+    ships[m].orders+=1;
+  });
+  const modes=Object.keys(ships);
+  const colors=modes.map(m=>SHIP_COLORS[m]||'#94a3b8');
+
+  const buildDonut=(canvasId,vals,legendId,fmt)=>{
+    if(charts[canvasId])charts[canvasId].destroy();
+    const total=vals.reduce((a,b)=>a+b,0);
+    charts[canvasId]=new Chart(document.getElementById(canvasId),{
+      type:'doughnut',
+      data:{labels:modes,datasets:[{data:vals,backgroundColor:colors,borderWidth:2,borderColor:'#fff',hoverOffset:4}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${fmt(ctx.parsed)} (${((ctx.parsed/total)*100).toFixed(0)}%)`}}}}
+    });
+    const lg=document.getElementById(legendId);
+    lg.innerHTML=modes.map((m,i)=>`<div class="legend-item"><div class="legend-sq" style="background:${colors[i]}"></div><span>${m}</span></div>`).join('');
+  };
+
+  buildDonut('donutProfit',modes.map(m=>Math.round(ships[m].prf)),'shipLegend1',v=>'$'+v.toLocaleString());
+  buildDonut('donutUnits',modes.map(m=>ships[m].units),'shipLegend2',v=>v+' units');
+  buildDonut('donutOrders',modes.map(m=>ships[m].orders),'shipLegend3',v=>v+' orders');
+}
+
+function resetDash(){
+  Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});
+  charts={};
+  document.getElementById('usMap').innerHTML='';
+  document.getElementById('dashboard').style.display='none';
+  document.getElementById('uploadScreen').style.display='block';
+}
+
+document.getElementById('fileInput').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{loadData(JSON.parse(ev.target.result));}catch(err){alert('Invalid JSON: '+err.message);}};
+  r.readAsText(f);
+  e.target.value='';
+});
+
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('drag');
+  const f=e.dataTransfer.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{try{loadData(JSON.parse(ev.target.result));}catch(err){alert('Invalid JSON: '+err.message);}};
+  r.readAsText(f);
+});
+
+window.resetDash=resetDash;
+
+setTimeout(()=>{
+  try{loadData(PRELOADED);}catch(e){}
+},600);
+
+const PRELOADED=[{"Order ID":"ORD-2024-10001","Order Date":"08/12/2024","Ship Date":"09/12/2024","Ship Mode":"Same Day","Customer ID":"CUST-1001","Customer Name":"Ken Brennan","Segment":"Consumer","Country":"United States","City":"Houston","State":"Texas","Region":"Central","Product Name":"Fellowes Laminator","Category":"Technology","Sales":"$544","Quantity":6,"Profit":"$67"},{"Order ID":"ORD-2024-10002","Order Date":"10/06/2024","Ship Date":"14/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1002","Customer Name":"John Smith","Segment":"Corporate","Country":"United States","City":"Atlanta","State":"Georgia","Region":"South","Product Name":"Pilot G2 Pen Pack","Category":"Office Supplies","Sales":"$97","Quantity":7,"Profit":"$1"},{"Order ID":"ORD-2024-10003","Order Date":"07/02/2024","Ship Date":"11/02/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1003","Customer Name":"Maria Johnson","Segment":"Home Office","Country":"United States","City":"Phoenix","State":"Arizona","Region":"West","Product Name":"Reception Desk","Category":"Furniture","Sales":"$2,154","Quantity":3,"Profit":"$254"},{"Order ID":"ORD-2024-10004","Order Date":"05/03/2024","Ship Date":"09/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1004","Customer Name":"Alicia Turner","Segment":"Consumer","Country":"United States","City":"Philadelphia","State":"Pennsylvania","Region":"East","Product Name":"Staples Multipurpose Paper","Category":"Office Supplies","Sales":"$47","Quantity":7,"Profit":"$10"},{"Order ID":"ORD-2024-10005","Order Date":"07/11/2024","Ship Date":"11/11/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1005","Customer Name":"David Lee","Segment":"Corporate","Country":"Canada","City":"Toronto","State":"Ontario","Region":"Canada","Product Name":"Canon ImageClass Printer","Category":"Technology","Sales":"$1,022","Quantity":5,"Profit":"$204"},{"Order ID":"ORD-2024-10006","Order Date":"17/03/2024","Ship Date":"20/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1006","Customer Name":"Priya Nair","Segment":"Home Office","Country":"Germany","City":"Berlin","State":"Berlin","Region":"EMEA","Product Name":"Dell 24 inch Monitor","Category":"Technology","Sales":"$536","Quantity":3,"Profit":"$107"},{"Order ID":"ORD-2024-10007","Order Date":"12/05/2024","Ship Date":"15/05/2024","Ship Mode":"Second Class","Customer ID":"CUST-1007","Customer Name":"Michael Carter","Segment":"Consumer","Country":"United States","City":"Los Angeles","State":"California","Region":"West","Product Name":"Desk Organizer Tray","Category":"Office Supplies","Sales":"$57","Quantity":3,"Profit":"$10"},{"Order ID":"ORD-2024-10008","Order Date":"23/08/2024","Ship Date":"27/08/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1008","Customer Name":"Susan Walker","Segment":"Corporate","Country":"United States","City":"Seattle","State":"Washington","Region":"West","Product Name":"Task Office Lamp","Category":"Furniture","Sales":"$128","Quantity":3,"Profit":"$13"},{"Order ID":"ORD-2024-10009","Order Date":"27/01/2024","Ship Date":"02/02/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1009","Customer Name":"Robert Hall","Segment":"Consumer","Country":"United States","City":"Boston","State":"Massachusetts","Region":"East","Product Name":"Executive Leather Office Chair","Category":"Furniture","Sales":"$288","Quantity":1,"Profit":"$53"},{"Order ID":"ORD-2024-10010","Order Date":"27/11/2024","Ship Date":"30/11/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1010","Customer Name":"Emily Davis","Segment":"Home Office","Country":"United States","City":"Dallas","State":"Texas","Region":"Central","Product Name":"Conference Table","Category":"Furniture","Sales":"$1,946","Quantity":3,"Profit":"$311"},{"Order ID":"ORD-2024-10011","Order Date":"26/04/2024","Ship Date":"27/04/2024","Ship Mode":"First Class","Customer ID":"CUST-1011","Customer Name":"Daniel Young","Segment":"Consumer","Country":"United States","City":"Charlotte","State":"North Carolina","Region":"South","Product Name":"USB-C Docking Station","Category":"Technology","Sales":"$728","Quantity":6,"Profit":"$134"},{"Order ID":"ORD-2024-10012","Order Date":"02/05/2024","Ship Date":"07/05/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1012","Customer Name":"Karen White","Segment":"Corporate","Country":"Canada","City":"Vancouver","State":"British Columbia","Region":"Canada","Product Name":"Envelopes, Pack of 100","Category":"Office Supplies","Sales":"$32","Quantity":3,"Profit":"$9"},{"Order ID":"ORD-2024-10013","Order Date":"12/03/2024","Ship Date":"18/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1013","Customer Name":"Jason Green","Segment":"Consumer","Country":"Australia","City":"Sydney","State":"New South Wales","Region":"APAC","Product Name":"Logitech Wireless Mouse","Category":"Technology","Sales":"$75","Quantity":3,"Profit":"$15"},{"Order ID":"ORD-2024-10014","Order Date":"05/02/2024","Ship Date":"10/02/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1014","Customer Name":"Olivia Harris","Segment":"Home Office","Country":"United States","City":"Chicago","State":"Illinois","Region":"Central","Product Name":"Avery Binder Set","Category":"Office Supplies","Sales":"$25","Quantity":2,"Profit":"$5"},{"Order ID":"ORD-2024-10015","Order Date":"10/03/2024","Ship Date":"16/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1015","Customer Name":"Brian King","Segment":"Corporate","Country":"United States","City":"Miami","State":"Florida","Region":"South","Product Name":"Storage Cabinet","Category":"Furniture","Sales":"$741","Quantity":3,"Profit":"$69"},{"Order ID":"ORD-2024-10016","Order Date":"05/08/2024","Ship Date":"09/08/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1016","Customer Name":"Sophia Adams","Segment":"Consumer","Country":"United States","City":"Denver","State":"Colorado","Region":"West","Product Name":"Noise Cancelling Headset","Category":"Technology","Sales":"$280","Quantity":3,"Profit":"$71"},{"Order ID":"ORD-2024-10017","Order Date":"19/06/2024","Ship Date":"21/06/2024","Ship Mode":"First Class","Customer ID":"CUST-1017","Customer Name":"James Scott","Segment":"Corporate","Country":"United States","City":"San Francisco","State":"California","Region":"West","Product Name":"Post-it Notes Value Pack","Category":"Office Supplies","Sales":"$32","Quantity":4,"Profit":"$3"},{"Order ID":"ORD-2024-10018","Order Date":"01/10/2024","Ship Date":"06/10/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1018","Customer Name":"Linda Baker","Segment":"Home Office","Country":"United States","City":"Detroit","State":"Michigan","Region":"Central","Product Name":"Adjustable Standing Desk","Category":"Furniture","Sales":"$393","Quantity":1,"Profit":"$71"},{"Order ID":"ORD-2024-10019","Order Date":"08/12/2024","Ship Date":"11/12/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1019","Customer Name":"Ethan Moore","Segment":"Consumer","Country":"United Kingdom","City":"London","State":"England","Region":"EMEA","Product Name":"Sharpie Permanent Markers","Category":"Office Supplies","Sales":"$61","Quantity":6,"Profit":"$19"},{"Order ID":"ORD-2024-10020","Order Date":"15/12/2024","Ship Date":"16/12/2024","Ship Mode":"Same Day","Customer ID":"CUST-1020","Customer Name":"Rachel Perez","Segment":"Corporate","Country":"United States","City":"New York","State":"New York","Region":"East","Product Name":"Bookshelf, 5-Shelf","Category":"Furniture","Sales":"$488","Quantity":3,"Profit":"$57"},{"Order ID":"ORD-2024-10021","Order Date":"24/12/2024","Ship Date":"30/12/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1021","Customer Name":"Noah Reed","Segment":"Consumer","Country":"United States","City":"Houston","State":"Texas","Region":"Central","Product Name":"Portable SSD 1TB","Category":"Technology","Sales":"$106","Quantity":1,"Profit":"$2"},{"Order ID":"ORD-2024-10022","Order Date":"12/01/2024","Ship Date":"14/01/2024","Ship Mode":"First Class","Customer ID":"CUST-1022","Customer Name":"Grace Campbell","Segment":"Home Office","Country":"United States","City":"Atlanta","State":"Georgia","Region":"South","Product Name":"HP 63 Ink Cartridge","Category":"Technology","Sales":"$43","Quantity":1,"Profit":"$12"},{"Order ID":"ORD-2024-10023","Order Date":"08/06/2024","Ship Date":"12/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1023","Customer Name":"Henry Foster","Segment":"Corporate","Country":"United States","City":"Phoenix","State":"Arizona","Region":"West","Product Name":"Fellowes Laminator","Category":"Technology","Sales":"$343","Quantity":4,"Profit":"$76"},{"Order ID":"ORD-2024-10024","Order Date":"13/02/2024","Ship Date":"17/02/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1024","Customer Name":"Chloe Bennett","Segment":"Consumer","Country":"United States","City":"Philadelphia","State":"Pennsylvania","Region":"East","Product Name":"Pilot G2 Pen Pack","Category":"Office Supplies","Sales":"$40","Quantity":3,"Profit":"$9"},{"Order ID":"ORD-2024-10025","Order Date":"02/05/2024","Ship Date":"07/05/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1001","Customer Name":"Ken Brennan","Segment":"Consumer","Country":"Canada","City":"Toronto","State":"Ontario","Region":"Canada","Product Name":"Reception Desk","Category":"Furniture","Sales":"$2,067","Quantity":3,"Profit":"$149"},{"Order ID":"ORD-2024-10026","Order Date":"06/03/2024","Ship Date":"10/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1002","Customer Name":"John Smith","Segment":"Corporate","Country":"Germany","City":"Berlin","State":"Berlin","Region":"EMEA","Product Name":"Staples Multipurpose Paper","Category":"Office Supplies","Sales":"$37","Quantity":5,"Profit":"$8"},{"Order ID":"ORD-2024-10027","Order Date":"24/09/2024","Ship Date":"29/09/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1003","Customer Name":"Maria Johnson","Segment":"Home Office","Country":"United States","City":"Los Angeles","State":"California","Region":"West","Product Name":"Canon ImageClass Printer","Category":"Technology","Sales":"$208","Quantity":1,"Profit":"$52"},{"Order ID":"ORD-2024-10028","Order Date":"06/01/2024","Ship Date":"09/01/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1004","Customer Name":"Alicia Turner","Segment":"Consumer","Country":"United States","City":"Seattle","State":"Washington","Region":"West","Product Name":"Dell 24 inch Monitor","Category":"Technology","Sales":"$189","Quantity":1,"Profit":"$31"},{"Order ID":"ORD-2024-10029","Order Date":"06/04/2024","Ship Date":"10/04/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1005","Customer Name":"David Lee","Segment":"Corporate","Country":"United States","City":"Boston","State":"Massachusetts","Region":"East","Product Name":"Desk Organizer Tray","Category":"Office Supplies","Sales":"$157","Quantity":8,"Profit":"$3"},{"Order ID":"ORD-2024-10030","Order Date":"27/07/2024","Ship Date":"02/08/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1006","Customer Name":"Priya Nair","Segment":"Home Office","Country":"United States","City":"Dallas","State":"Texas","Region":"Central","Product Name":"Task Office Lamp","Category":"Furniture","Sales":"$142","Quantity":3,"Profit":"$25"},{"Order ID":"ORD-2024-10031","Order Date":"15/11/2024","Ship Date":"18/11/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1007","Customer Name":"Michael Carter","Segment":"Consumer","Country":"United States","City":"Charlotte","State":"North Carolina","Region":"South","Product Name":"Executive Leather Office Chair","Category":"Furniture","Sales":"$539","Quantity":2,"Profit":"$113"},{"Order ID":"ORD-2024-10032","Order Date":"25/06/2024","Ship Date":"28/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1008","Customer Name":"Susan Walker","Segment":"Corporate","Country":"Canada","City":"Vancouver","State":"British Columbia","Region":"Canada","Product Name":"Conference Table","Category":"Furniture","Sales":"$1,948","Quantity":3,"Profit":"$285"},{"Order ID":"ORD-2024-10033","Order Date":"04/04/2024","Ship Date":"09/04/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1009","Customer Name":"Robert Hall","Segment":"Consumer","Country":"Australia","City":"Sydney","State":"New South Wales","Region":"APAC","Product Name":"USB-C Docking Station","Category":"Technology","Sales":"$555","Quantity":4,"Profit":"$92"},{"Order ID":"ORD-2024-10034","Order Date":"08/06/2024","Ship Date":"12/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1010","Customer Name":"Emily Davis","Segment":"Home Office","Country":"United States","City":"Chicago","State":"Illinois","Region":"Central","Product Name":"Envelopes, Pack of 100","Category":"Office Supplies","Sales":"$11","Quantity":1,"Profit":"$3"},{"Order ID":"ORD-2024-10035","Order Date":"11/01/2024","Ship Date":"16/01/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1011","Customer Name":"Daniel Young","Segment":"Consumer","Country":"United States","City":"Miami","State":"Florida","Region":"South","Product Name":"Logitech Wireless Mouse","Category":"Technology","Sales":"$47","Quantity":2,"Profit":"$12"},{"Order ID":"ORD-2024-10036","Order Date":"12/03/2024","Ship Date":"18/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1012","Customer Name":"Karen White","Segment":"Corporate","Country":"United States","City":"Denver","State":"Colorado","Region":"West","Product Name":"Avery Binder Set","Category":"Office Supplies","Sales":"$119","Quantity":9,"Profit":"$8"},{"Order ID":"ORD-2024-10037","Order Date":"12/11/2024","Ship Date":"14/11/2024","Ship Mode":"First Class","Customer ID":"CUST-1013","Customer Name":"Jason Green","Segment":"Consumer","Country":"United States","City":"San Francisco","State":"California","Region":"West","Product Name":"Storage Cabinet","Category":"Furniture","Sales":"$785","Quantity":3,"Profit":"$115"},{"Order ID":"ORD-2024-10038","Order Date":"12/03/2024","Ship Date":"15/03/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1014","Customer Name":"Olivia Harris","Segment":"Home Office","Country":"United States","City":"Detroit","State":"Michigan","Region":"Central","Product Name":"Noise Cancelling Headset","Category":"Technology","Sales":"$527","Quantity":6,"Profit":"$96"},{"Order ID":"ORD-2024-10039","Order Date":"13/03/2024","Ship Date":"14/03/2024","Ship Mode":"First Class","Customer ID":"CUST-1015","Customer Name":"Brian King","Segment":"Corporate","Country":"United Kingdom","City":"London","State":"England","Region":"EMEA","Product Name":"Post-it Notes Value Pack","Category":"Office Supplies","Sales":"$48","Quantity":6,"Profit":"$13"},{"Order ID":"ORD-2024-10040","Order Date":"13/12/2024","Ship Date":"19/12/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1016","Customer Name":"Sophia Adams","Segment":"Consumer","Country":"United States","City":"New York","State":"New York","Region":"East","Product Name":"Adjustable Standing Desk","Category":"Furniture","Sales":"$1,299","Quantity":3,"Profit":"$233"},{"Order ID":"ORD-2024-10041","Order Date":"13/07/2024","Ship Date":"14/07/2024","Ship Mode":"Same Day","Customer ID":"CUST-1017","Customer Name":"James Scott","Segment":"Corporate","Country":"United States","City":"Houston","State":"Texas","Region":"Central","Product Name":"Sharpie Permanent Markers","Category":"Office Supplies","Sales":"$42","Quantity":4,"Profit":"$10"},{"Order ID":"ORD-2024-10042","Order Date":"13/11/2024","Ship Date":"15/11/2024","Ship Mode":"Second Class","Customer ID":"CUST-1018","Customer Name":"Linda Baker","Segment":"Home Office","Country":"United States","City":"Atlanta","State":"Georgia","Region":"South","Product Name":"Bookshelf, 5-Shelf","Category":"Furniture","Sales":"$489","Quantity":3,"Profit":"$12"},{"Order ID":"ORD-2024-10043","Order Date":"13/02/2024","Ship Date":"15/02/2024","Ship Mode":"First Class","Customer ID":"CUST-1019","Customer Name":"Ethan Moore","Segment":"Consumer","Country":"United States","City":"Phoenix","State":"Arizona","Region":"West","Product Name":"Portable SSD 1TB","Category":"Technology","Sales":"$619","Quantity":6,"Profit":"$145"},{"Order ID":"ORD-2024-10044","Order Date":"12/04/2024","Ship Date":"15/04/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1020","Customer Name":"Rachel Perez","Segment":"Corporate","Country":"United States","City":"Philadelphia","State":"Pennsylvania","Region":"East","Product Name":"HP 63 Ink Cartridge","Category":"Technology","Sales":"$41","Quantity":1,"Profit":"$8"},{"Order ID":"ORD-2024-10045","Order Date":"09/05/2024","Ship Date":"12/05/2024","Ship Mode":"Second Class","Customer ID":"CUST-1021","Customer Name":"Noah Reed","Segment":"Consumer","Country":"Canada","City":"Toronto","State":"Ontario","Region":"Canada","Product Name":"Fellowes Laminator","Category":"Technology","Sales":"$80","Quantity":1,"Profit":"$-1"},{"Order ID":"ORD-2024-10046","Order Date":"05/06/2024","Ship Date":"11/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1022","Customer Name":"Grace Campbell","Segment":"Home Office","Country":"Germany","City":"Berlin","State":"Berlin","Region":"EMEA","Product Name":"Pilot G2 Pen Pack","Category":"Office Supplies","Sales":"$115","Quantity":8,"Profit":"$35"},{"Order ID":"ORD-2024-10047","Order Date":"25/06/2024","Ship Date":"01/07/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1023","Customer Name":"Henry Foster","Segment":"Corporate","Country":"United States","City":"Los Angeles","State":"California","Region":"West","Product Name":"Reception Desk","Category":"Furniture","Sales":"$2,199","Quantity":3,"Profit":"$291"},{"Order ID":"ORD-2024-10048","Order Date":"14/06/2024","Ship Date":"16/06/2024","Ship Mode":"Second Class","Customer ID":"CUST-1024","Customer Name":"Chloe Bennett","Segment":"Consumer","Country":"United States","City":"Seattle","State":"Washington","Region":"West","Product Name":"Staples Multipurpose Paper","Category":"Office Supplies","Sales":"$20","Quantity":3,"Profit":"$4"},{"Order ID":"ORD-2024-10049","Order Date":"25/06/2024","Ship Date":"01/07/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1001","Customer Name":"Ken Brennan","Segment":"Consumer","Country":"United States","City":"Boston","State":"Massachusetts","Region":"East","Product Name":"Canon ImageClass Printer","Category":"Technology","Sales":"$213","Quantity":1,"Profit":"$46"},{"Order ID":"ORD-2024-10050","Order Date":"03/06/2024","Ship Date":"08/06/2024","Ship Mode":"Standard Class","Customer ID":"CUST-1002","Customer Name":"John Smith","Segment":"Corporate","Country":"United States","City":"Dallas","State":"Texas","Region":"Central","Product Name":"Dell 24 inch Monitor","Category":"Technology","Sales":"$755","Quantity":4,"Profit":"$92"},{"Order ID":"ORD-2025-10051","Order Date":"27/06/2025","Ship Date":"28/06/2025","Ship Mode":"Same Day","Customer ID":"CUST-1003","Customer Name":"Maria Johnson","Segment":"Home Office","Country":"United States","City":"Charlotte","State":"North Carolina","Region":"South","Product Name":"Desk Organizer Tray","Category":"Office Supplies","Sales":"$172","Quantity":9,"Profit":"$26"},{"Order ID":"ORD-2025-10052","Order Date":"16/06/2025","Ship Date":"22/06/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1004","Customer Name":"Alicia Turner","Segment":"Consumer","Country":"Canada","City":"Vancouver","State":"British Columbia","Region":"Canada","Product Name":"Task Office Lamp","Category":"Furniture","Sales":"$134","Quantity":3,"Profit":"$29"},{"Order ID":"ORD-2025-10053","Order Date":"22/06/2025","Ship Date":"28/06/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1005","Customer Name":"David Lee","Segment":"Corporate","Country":"Australia","City":"Sydney","State":"New South Wales","Region":"APAC","Product Name":"Executive Leather Office Chair","Category":"Furniture","Sales":"$291","Quantity":1,"Profit":"$55"},{"Order ID":"ORD-2025-10054","Order Date":"15/05/2025","Ship Date":"18/05/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1006","Customer Name":"Priya Nair","Segment":"Home Office","Country":"United States","City":"Chicago","State":"Illinois","Region":"Central","Product Name":"Conference Table","Category":"Furniture","Sales":"$1,731","Quantity":3,"Profit":"$232"},{"Order ID":"ORD-2025-10055","Order Date":"21/04/2025","Ship Date":"24/04/2025","Ship Mode":"Second Class","Customer ID":"CUST-1007","Customer Name":"Michael Carter","Segment":"Consumer","Country":"United States","City":"Miami","State":"Florida","Region":"South","Product Name":"USB-C Docking Station","Category":"Technology","Sales":"$239","Quantity":2,"Profit":"$59"},{"Order ID":"ORD-2025-10056","Order Date":"12/02/2025","Ship Date":"17/02/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1008","Customer Name":"Susan Walker","Segment":"Corporate","Country":"United States","City":"Denver","State":"Colorado","Region":"West","Product Name":"Envelopes, Pack of 100","Category":"Office Supplies","Sales":"$49","Quantity":4,"Profit":"$13"},{"Order ID":"ORD-2025-10057","Order Date":"12/11/2025","Ship Date":"14/11/2025","Ship Mode":"Second Class","Customer ID":"CUST-1009","Customer Name":"Robert Hall","Segment":"Consumer","Country":"United States","City":"San Francisco","State":"California","Region":"West","Product Name":"Logitech Wireless Mouse","Category":"Technology","Sales":"$105","Quantity":4,"Profit":"$25"},{"Order ID":"ORD-2025-10058","Order Date":"18/06/2025","Ship Date":"22/06/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1010","Customer Name":"Emily Davis","Segment":"Home Office","Country":"United States","City":"Detroit","State":"Michigan","Region":"Central","Product Name":"Avery Binder Set","Category":"Office Supplies","Sales":"$50","Quantity":4,"Profit":"$13"},{"Order ID":"ORD-2025-10059","Order Date":"02/11/2025","Ship Date":"05/11/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1011","Customer Name":"Daniel Young","Segment":"Consumer","Country":"United Kingdom","City":"London","State":"England","Region":"EMEA","Product Name":"Storage Cabinet","Category":"Furniture","Sales":"$745","Quantity":3,"Profit":"$74"},{"Order ID":"ORD-2025-10060","Order Date":"15/01/2025","Ship Date":"17/01/2025","Ship Mode":"First Class","Customer ID":"CUST-1012","Customer Name":"Karen White","Segment":"Corporate","Country":"United States","City":"New York","State":"New York","Region":"East","Product Name":"Noise Cancelling Headset","Category":"Technology","Sales":"$506","Quantity":6,"Profit":"$113"},{"Order ID":"ORD-2025-10061","Order Date":"27/12/2025","Ship Date":"02/01/2026","Ship Mode":"Standard Class","Customer ID":"CUST-1013","Customer Name":"Jason Green","Segment":"Consumer","Country":"United States","City":"Houston","State":"Texas","Region":"Central","Product Name":"Post-it Notes Value Pack","Category":"Office Supplies","Sales":"$40","Quantity":5,"Profit":"$8"},{"Order ID":"ORD-2025-10062","Order Date":"10/08/2025","Ship Date":"16/08/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1014","Customer Name":"Olivia Harris","Segment":"Home Office","Country":"United States","City":"Atlanta","State":"Georgia","Region":"South","Product Name":"Adjustable Standing Desk","Category":"Furniture","Sales":"$915","Quantity":2,"Profit":"$104"},{"Order ID":"ORD-2025-10063","Order Date":"13/10/2025","Ship Date":"16/10/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1015","Customer Name":"Brian King","Segment":"Corporate","Country":"United States","City":"Phoenix","State":"Arizona","Region":"West","Product Name":"Sharpie Permanent Markers","Category":"Office Supplies","Sales":"$42","Quantity":4,"Profit":"$12"},{"Order ID":"ORD-2025-10064","Order Date":"08/07/2025","Ship Date":"13/07/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1016","Customer Name":"Sophia Adams","Segment":"Consumer","Country":"United States","City":"Philadelphia","State":"Pennsylvania","Region":"East","Product Name":"Bookshelf, 5-Shelf","Category":"Furniture","Sales":"$156","Quantity":1,"Profit":"$16"},{"Order ID":"ORD-2025-10065","Order Date":"19/10/2025","Ship Date":"22/10/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1017","Customer Name":"James Scott","Segment":"Corporate","Country":"Canada","City":"Toronto","State":"Ontario","Region":"Canada","Product Name":"Portable SSD 1TB","Category":"Technology","Sales":"$117","Quantity":1,"Profit":"$27"},{"Order ID":"ORD-2025-10066","Order Date":"14/06/2025","Ship Date":"16/06/2025","Ship Mode":"First Class","Customer ID":"CUST-1018","Customer Name":"Linda Baker","Segment":"Home Office","Country":"Germany","City":"Berlin","State":"Berlin","Region":"EMEA","Product Name":"HP 63 Ink Cartridge","Category":"Technology","Sales":"$250","Quantity":6,"Profit":"$59"},{"Order ID":"ORD-2025-10067","Order Date":"18/05/2025","Ship Date":"23/05/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1019","Customer Name":"Ethan Moore","Segment":"Consumer","Country":"United States","City":"Los Angeles","State":"California","Region":"West","Product Name":"Fellowes Laminator","Category":"Technology","Sales":"$392","Quantity":5,"Profit":"$73"},{"Order ID":"ORD-2025-10068","Order Date":"01/08/2025","Ship Date":"04/08/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1020","Customer Name":"Rachel Perez","Segment":"Corporate","Country":"United States","City":"Seattle","State":"Washington","Region":"West","Product Name":"Pilot G2 Pen Pack","Category":"Office Supplies","Sales":"$43","Quantity":3,"Profit":"$11"},{"Order ID":"ORD-2025-10069","Order Date":"14/01/2025","Ship Date":"17/01/2025","Ship Mode":"Second Class","Customer ID":"CUST-1021","Customer Name":"Noah Reed","Segment":"Consumer","Country":"United States","City":"Boston","State":"Massachusetts","Region":"East","Product Name":"Reception Desk","Category":"Furniture","Sales":"$2,036","Quantity":3,"Profit":"$233"},{"Order ID":"ORD-2025-10070","Order Date":"25/07/2025","Ship Date":"27/07/2025","Ship Mode":"First Class","Customer ID":"CUST-1022","Customer Name":"Grace Campbell","Segment":"Home Office","Country":"United States","City":"Dallas","State":"Texas","Region":"Central","Product Name":"Staples Multipurpose Paper","Category":"Office Supplies","Sales":"$14","Quantity":2,"Profit":"$3"},{"Order ID":"ORD-2025-10071","Order Date":"04/12/2025","Ship Date":"09/12/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1023","Customer Name":"Henry Foster","Segment":"Corporate","Country":"United States","City":"Charlotte","State":"North Carolina","Region":"South","Product Name":"Canon ImageClass Printer","Category":"Technology","Sales":"$186","Quantity":1,"Profit":"$27"},{"Order ID":"ORD-2025-10072","Order Date":"02/05/2025","Ship Date":"03/05/2025","Ship Mode":"Same Day","Customer ID":"CUST-1024","Customer Name":"Chloe Bennett","Segment":"Consumer","Country":"Canada","City":"Vancouver","State":"British Columbia","Region":"Canada","Product Name":"Dell 24 inch Monitor","Category":"Technology","Sales":"$1,021","Quantity":6,"Profit":"$130"},{"Order ID":"ORD-2025-10073","Order Date":"15/06/2025","Ship Date":"18/06/2025","Ship Mode":"Second Class","Customer ID":"CUST-1001","Customer Name":"Ken Brennan","Segment":"Consumer","Country":"Australia","City":"Sydney","State":"New South Wales","Region":"APAC","Product Name":"Desk Organizer Tray","Category":"Office Supplies","Sales":"$118","Quantity":6,"Profit":"$25"},{"Order ID":"ORD-2025-10074","Order Date":"12/04/2025","Ship Date":"15/04/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1002","Customer Name":"John Smith","Segment":"Corporate","Country":"United States","City":"Chicago","State":"Illinois","Region":"Central","Product Name":"Task Office Lamp","Category":"Furniture","Sales":"$129","Quantity":3,"Profit":"$24"},{"Order ID":"ORD-2025-10075","Order Date":"15/09/2025","Ship Date":"18/09/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1003","Customer Name":"Maria Johnson","Segment":"Home Office","Country":"United States","City":"Miami","State":"Florida","Region":"South","Product Name":"Executive Leather Office Chair","Category":"Furniture","Sales":"$888","Quantity":3,"Profit":"$178"},{"Order ID":"ORD-2025-10076","Order Date":"22/06/2025","Ship Date":"24/06/2025","Ship Mode":"First Class","Customer ID":"CUST-1004","Customer Name":"Alicia Turner","Segment":"Consumer","Country":"United States","City":"Denver","State":"Colorado","Region":"West","Product Name":"Conference Table","Category":"Furniture","Sales":"$1,823","Quantity":3,"Profit":"$185"},{"Order ID":"ORD-2025-10077","Order Date":"01/08/2025","Ship Date":"04/08/2025","Ship Mode":"Second Class","Customer ID":"CUST-1005","Customer Name":"David Lee","Segment":"Corporate","Country":"United States","City":"San Francisco","State":"California","Region":"West","Product Name":"USB-C Docking Station","Category":"Technology","Sales":"$128","Quantity":1,"Profit":"$-8"},{"Order ID":"ORD-2025-10078","Order Date":"01/01/2025","Ship Date":"02/01/2025","Ship Mode":"First Class","Customer ID":"CUST-1006","Customer Name":"Priya Nair","Segment":"Home Office","Country":"United States","City":"Detroit","State":"Michigan","Region":"Central","Product Name":"Envelopes, Pack of 100","Category":"Office Supplies","Sales":"$46","Quantity":4,"Profit":"$2"},{"Order ID":"ORD-2025-10079","Order Date":"19/06/2025","Ship Date":"21/06/2025","Ship Mode":"First Class","Customer ID":"CUST-1007","Customer Name":"Michael Carter","Segment":"Consumer","Country":"United Kingdom","City":"London","State":"England","Region":"EMEA","Product Name":"Logitech Wireless Mouse","Category":"Technology","Sales":"$25","Quantity":1,"Profit":"$3"},{"Order ID":"ORD-2025-10080","Order Date":"23/11/2025","Ship Date":"26/11/2025","Ship Mode":"Second Class","Customer ID":"CUST-1008","Customer Name":"Susan Walker","Segment":"Corporate","Country":"United States","City":"New York","State":"New York","Region":"East","Product Name":"Avery Binder Set","Category":"Office Supplies","Sales":"$62","Quantity":5,"Profit":"$7"},{"Order ID":"ORD-2025-10081","Order Date":"09/02/2025","Ship Date":"12/02/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1009","Customer Name":"Robert Hall","Segment":"Consumer","Country":"United States","City":"Houston","State":"Texas","Region":"Central","Product Name":"Storage Cabinet","Category":"Furniture","Sales":"$226","Quantity":1,"Profit":"$8"},{"Order ID":"ORD-2025-10082","Order Date":"27/01/2025","Ship Date":"28/01/2025","Ship Mode":"First Class","Customer ID":"CUST-1010","Customer Name":"Emily Davis","Segment":"Home Office","Country":"United States","City":"Atlanta","State":"Georgia","Region":"South","Product Name":"Noise Cancelling Headset","Category":"Technology","Sales":"$174","Quantity":2,"Profit":"$19"},{"Order ID":"ORD-2025-10083","Order Date":"17/07/2025","Ship Date":"18/07/2025","Ship Mode":"Same Day","Customer ID":"CUST-1011","Customer Name":"Daniel Young","Segment":"Consumer","Country":"United States","City":"Phoenix","State":"Arizona","Region":"West","Product Name":"Post-it Notes Value Pack","Category":"Office Supplies","Sales":"$50","Quantity":6,"Profit":"$3"},{"Order ID":"ORD-2025-10084","Order Date":"03/05/2025","Ship Date":"08/05/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1012","Customer Name":"Karen White","Segment":"Corporate","Country":"United States","City":"Philadelphia","State":"Pennsylvania","Region":"East","Product Name":"Adjustable Standing Desk","Category":"Furniture","Sales":"$450","Quantity":1,"Profit":"$40"},{"Order ID":"ORD-2025-10085","Order Date":"07/07/2025","Ship Date":"13/07/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1013","Customer Name":"Jason Green","Segment":"Consumer","Country":"Canada","City":"Toronto","State":"Ontario","Region":"Canada","Product Name":"Sharpie Permanent Markers","Category":"Office Supplies","Sales":"$41","Quantity":4,"Profit":"$9"},{"Order ID":"ORD-2025-10086","Order Date":"23/10/2025","Ship Date":"26/10/2025","Ship Mode":"Second Class","Customer ID":"CUST-1014","Customer Name":"Olivia Harris","Segment":"Home Office","Country":"Germany","City":"Berlin","State":"Berlin","Region":"EMEA","Product Name":"Bookshelf, 5-Shelf","Category":"Furniture","Sales":"$445","Quantity":3,"Profit":"$43"},{"Order ID":"ORD-2025-10087","Order Date":"22/01/2025","Ship Date":"24/01/2025","Ship Mode":"First Class","Customer ID":"CUST-1015","Customer Name":"Brian King","Segment":"Corporate","Country":"United States","City":"Los Angeles","State":"California","Region":"West","Product Name":"Portable SSD 1TB","Category":"Technology","Sales":"$302","Quantity":3,"Profit":"$53"},{"Order ID":"ORD-2025-10088","Order Date":"23/01/2025","Ship Date":"28/01/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1016","Customer Name":"Sophia Adams","Segment":"Consumer","Country":"United States","City":"Seattle","State":"Washington","Region":"West","Product Name":"HP 63 Ink Cartridge","Category":"Technology","Sales":"$111","Quantity":3,"Profit":"$32"},{"Order ID":"ORD-2025-10089","Order Date":"24/09/2025","Ship Date":"27/09/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1017","Customer Name":"James Scott","Segment":"Corporate","Country":"United States","City":"Boston","State":"Massachusetts","Region":"East","Product Name":"Fellowes Laminator","Category":"Technology","Sales":"$247","Quantity":3,"Profit":"$55"},{"Order ID":"ORD-2025-10090","Order Date":"19/11/2025","Ship Date":"22/11/2025","Ship Mode":"Second Class","Customer ID":"CUST-1018","Customer Name":"Linda Baker","Segment":"Home Office","Country":"United States","City":"Dallas","State":"Texas","Region":"Central","Product Name":"Pilot G2 Pen Pack","Category":"Office Supplies","Sales":"$45","Quantity":3,"Profit":"$14"},{"Order ID":"ORD-2025-10091","Order Date":"03/04/2025","Ship Date":"04/04/2025","Ship Mode":"Same Day","Customer ID":"CUST-1019","Customer Name":"Ethan Moore","Segment":"Consumer","Country":"United States","City":"Charlotte","State":"North Carolina","Region":"South","Product Name":"Reception Desk","Category":"Furniture","Sales":"$723","Quantity":1,"Profit":"$93"},{"Order ID":"ORD-2025-10092","Order Date":"25/12/2025","Ship Date":"27/12/2025","Ship Mode":"First Class","Customer ID":"CUST-1020","Customer Name":"Rachel Perez","Segment":"Corporate","Country":"Canada","City":"Vancouver","State":"British Columbia","Region":"Canada","Product Name":"Staples Multipurpose Paper","Category":"Office Supplies","Sales":"$20","Quantity":3,"Profit":"$5"},{"Order ID":"ORD-2025-10093","Order Date":"27/08/2025","Ship Date":"02/09/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1021","Customer Name":"Noah Reed","Segment":"Consumer","Country":"Australia","City":"Sydney","State":"New South Wales","Region":"APAC","Product Name":"Canon ImageClass Printer","Category":"Technology","Sales":"$565","Quantity":3,"Profit":"$146"},{"Order ID":"ORD-2025-10094","Order Date":"03/02/2025","Ship Date":"05/02/2025","Ship Mode":"Second Class","Customer ID":"CUST-1022","Customer Name":"Grace Campbell","Segment":"Home Office","Country":"United States","City":"Chicago","State":"Illinois","Region":"Central","Product Name":"Dell 24 inch Monitor","Category":"Technology","Sales":"$1,002","Quantity":6,"Profit":"$128"},{"Order ID":"ORD-2025-10095","Order Date":"02/03/2025","Ship Date":"07/03/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1023","Customer Name":"Henry Foster","Segment":"Corporate","Country":"United States","City":"Miami","State":"Florida","Region":"South","Product Name":"Desk Organizer Tray","Category":"Office Supplies","Sales":"$103","Quantity":6,"Profit":"$20"},{"Order ID":"ORD-2025-10096","Order Date":"21/11/2025","Ship Date":"24/11/2025","Ship Mode":"Second Class","Customer ID":"CUST-1024","Customer Name":"Chloe Bennett","Segment":"Consumer","Country":"United States","City":"Denver","State":"Colorado","Region":"West","Product Name":"Task Office Lamp","Category":"Furniture","Sales":"$85","Quantity":2,"Profit":"$14"},{"Order ID":"ORD-2025-10097","Order Date":"25/10/2025","Ship Date":"28/10/2025","Ship Mode":"Second Class","Customer ID":"CUST-1001","Customer Name":"Ken Brennan","Segment":"Consumer","Country":"United States","City":"San Francisco","State":"California","Region":"West","Product Name":"Executive Leather Office Chair","Category":"Furniture","Sales":"$312","Quantity":1,"Profit":"$67"},{"Order ID":"ORD-2025-10098","Order Date":"12/11/2025","Ship Date":"16/11/2025","Ship Mode":"Standard Class","Customer ID":"CUST-1002","Customer Name":"John Smith","Segment":"Corporate","Country":"United States","City":"Detroit","State":"Michigan","Region":"Central","Product Name":"Conference Table","Category":"Furniture","Sales":"$657","Quantity":1,"Profit":"$18"},{"Order ID":"ORD-2025-10099","Order Date":"02/11/2025","Ship Date":"03/11/2025","Ship Mode":"First Class","Customer ID":"CUST-1003","Customer Name":"Maria Johnson","Segment":"Home Office","Country":"United Kingdom","City":"London","State":"England","Region":"EMEA","Product Name":"USB-C Docking Station","Category":"Technology","Sales":"$416","Quantity":3,"Profit":"$83"},{"Order ID":"ORD-2025-10100","Order Date":"17/09/2025","Ship Date":"19/09/2025","Ship Mode":"First Class","Customer ID":"CUST-1004","Customer Name":"Alicia Turner","Segment":"Consumer","Country":"United States","City":"New York","State":"New York","Region":"East","Product Name":"Envelopes, Pack of 100","Category":"Office Supplies","Sales":"$73","Quantity":6,"Profit":"$19"}];
+</script>
